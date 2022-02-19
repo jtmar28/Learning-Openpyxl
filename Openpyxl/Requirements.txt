@@ -1,0 +1,8 @@
+Requirements
+
+1. Add daily transaction data in master date file
+   a. Add Today's purchase in Total Purchases
+   b. Add Today's reward in Lifetime Reward Balance
+2. Create a new daily report
+   a. Create new report that contain, firstname, lastname, email, geneder, total purchases and lifetime reward balance columns
+   b. Headres of this should be 12pt. Times New Roman and Bold
