@@ -1,4 +1,6 @@
+from typing import final
 import openpyxl
+from openpyxl.styles import Font
 
 master_data = openpyxl.load_workbook('master_sheet.xlsx')
 daily_data = openpyxl.load_workbook('daily_sheet.xlsx')
@@ -50,8 +52,8 @@ for i in range(2, master_row_count):
   id = master_sheet.cell(row=i, column=1).value
   for row in todays_data:
     if row['id'] == id:
-      todays_purchase = row['todays_purchase']
-      todays_reward = row['todays_rewards']
+      todays_purchase = int(row['todays_purchase'])
+      todays_reward = int(row['todays_rewards'])
 
       # Get data from master sheet
       total_purchase = master_sheet.cell(row=i, column=6).value
@@ -66,4 +68,45 @@ for i in range(2, master_row_count):
 
 master_data.save('master_sheet.xlsx')
 
-#row 18 --> 65 and 6111 turns into 70 and 6115
+daily_report = openpyxl.Workbook()
+ws = daily_report.active
+
+# Get headers
+is_data = True
+column_count = 1
+header_values = []
+
+while is_data:
+  column_count += 1
+  data = master_sheet.cell(row=1, column=column_count).value
+  if data != None:
+    header_values.append(data)
+  else:
+    is_data = False
+
+header_style = Font(name="Times New Roman", size=12, bold=True)
+
+for i, col_name in enumerate(header_values):
+  col_index = i + 1
+  ws.cell(row=1, column=col_index).value = col_name
+  ws.cell(row=1, column=col_index).font = header_style
+
+IDs = []
+for data in todays_data:
+  IDs.append(data['id'])
+#remove the first cell from list which is ID header
+IDs.pop(0)
+
+final_data = []
+for i in range(2,master_row_count):
+  id = master_sheet.cell(row=i, column=1).value
+  if id in IDs:
+    lst = []
+    for j in range(2,8):
+      lst.append(master_sheet.cell(row=i, column=j).value)
+    final_data.append(lst)
+
+for data in final_data:
+  ws.append(data)
+
+daily_report.save("daily_report_send.xlsx")
